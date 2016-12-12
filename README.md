@@ -19,7 +19,7 @@ GitHash:  1b9ab3594a19fc8fbc6c0356e81f37a470f9d643
 3. 把`Makefile`中第2行的`BINARY`变量设置成目标程序的名称。
 4. 把`.BuildNumber`添加到`.gitignore`文件中。
 5. 【选做】在目标程序目录，添加`BuildVersion`文件，添加自己的主版本号信息。不做的话，会自动生成`BuildVersion`文件，并设置主版本号为`0.0.0`。
-6. 在目标程序中，添加添加下方的代码。
+6. 在目标程序中，添加下方的代码。
 7. 使用`make`命令，自动编译Go语言程序。
 ```go
 var (
