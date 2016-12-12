@@ -6,10 +6,10 @@
 + 会生成两个程序。他们唯一的区别是，程序名称是否带版本号。
 + 修改`BuildVersion`文件中的版本号后，`.BuildNumber`中的次数会置零。
 + 通过`version`或`v`参数，查看程序的版本信息。
->versionMaker git:(master)  ./versionMaker v
->Version:  0.0.1.1
->Time:     2016-12-12T15:02:44+0800
->GitHash:  1b9ab3594a19fc8fbc6c0356e81f37a470f9d643
+> versionMaker git:(master)  ./versionMaker v
+> Version:  0.0.1.1
+> Time:     2016-12-12T15:02:44+0800
+> GitHash:  1b9ab3594a19fc8fbc6c0356e81f37a470f9d643
 
 ## 使用方法
 
