@@ -2,8 +2,8 @@
 BINARY=versionMaker
 
 # 编译号文件名称
-BUILD_VERSION_FILE=BuildVersion
-BUILD_NUMBER_FILE=.BuildNumber
+BUILD_VERSION_FILE=Version
+BUILD_NUMBER_FILE=BuildNumber
 # 抓取当前git最新的hash码
 GITHASH=`git rev-parse HEAD`
 # 编译日期
@@ -18,6 +18,7 @@ build:
 	@./versionMaker
 	@go build ${LDFLAGS} -o ${BINARY}_V$$(cat $(BUILD_VERSION_FILE)).$$(cat $(BUILD_NUMBER_FILE))
 	@cp ${BINARY}_V$$(cat $(BUILD_VERSION_FILE)).$$(cat $(BUILD_NUMBER_FILE)) ${BINARY}
+	@rm ${BUILD_NUMBER_FILE}
 
 	
 

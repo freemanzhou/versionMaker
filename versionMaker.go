@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -17,47 +18,68 @@ var (
 	//BuildNumber 编译次数
 	BuildNumber string
 
-	buildNumberFile = ".BuildNumber"
-	versionFile     = "BuildVersion"
-	versionFileOld  = ".BuildVersion.Old"
-	defultVersion   = "0.0.0"
+	buildHistory   = "BuildHistory.json"
+	buildNumber    = "BuildNumber"
+	buildVersion   = "Version"
+	defaultVersion = "0.0.0"
 )
 
 func main() {
 	if len(os.Args) > 1 && (os.Args[1] == "version" || os.Args[1] == "v") {
 		fmt.Println("Version: ", Version+"."+BuildNumber)
 		fmt.Println("Time:    ", BuildTime)
-		fmt.Println("GitHash: ", GitHash)
+		fmt.Println("GitHsh:  ", GitHash)
 		return
 	}
-	setVersion()
+	makeBuildNumberFile()
 }
 
-func readBuildNumber() int {
-	raw, _ := ioutil.ReadFile(buildNumberFile)
-	buildNumber, _ := strconv.Atoi(string(raw))
-	//以上如果产生err的话，则buildNumber为0
-	return buildNumber
-}
-
-func setVersion() {
-	buildNumber := readBuildNumber()
-	version, err := ioutil.ReadFile(versionFile)
+func readVersion(filename, defaultVersion string) string {
+	version, err := ioutil.ReadFile(filename)
 	if err != nil {
-		version = []byte(defultVersion)
-		fmt.Printf("读取%s文件时出错，设置主版本号为“%s”\n", versionFile, defultVersion)
-		ioutil.WriteFile(versionFile, []byte(defultVersion), 0777)
+		version = []byte(defaultVersion)
+		fmt.Printf("读取%s文件时出错，设置主版本号为“%s”。\n", filename, defaultVersion)
+		ioutil.WriteFile(filename, version, 0777)
 	}
-	versionOld, err := ioutil.ReadFile(versionFileOld)
-	if err != nil || versionOld == nil {
-		versionOld = []byte("")
+	return string(version)
+}
+
+func readBuildNumberMap(filename string) map[string]int {
+	buildNumberMap := map[string]int{}
+
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Printf("读取%s失败，正在将其置零。\n", filename)
+		return buildNumberMap
 	}
 
-	if string(version) != string(versionOld) {
-		ioutil.WriteFile(versionFileOld, version, 0777)
-		buildNumber = 0
-	} else {
-		buildNumber++
+	if err := json.Unmarshal(bytes, &buildNumberMap); err != nil {
+		fmt.Println("转换Json文件失败，正在将其置零。")
 	}
-	ioutil.WriteFile(buildNumberFile, []byte(strconv.Itoa(buildNumber)), 0777)
+
+	return buildNumberMap
+}
+
+func saveBuildNumberMap(bmap map[string]int, filename string) {
+	bytes, err := json.Marshal(bmap)
+	if err != nil {
+		fmt.Printf("转换Json失败，不保存%s文件\n", filename)
+		return
+	}
+
+	ioutil.WriteFile(filename, bytes, 0777)
+}
+
+func saveBuildNumberFile(number int, filename string) {
+	if err := ioutil.WriteFile(filename, []byte(strconv.Itoa(number)), 0777); err != nil {
+		fmt.Println("无法保存BuildNumber.")
+	}
+}
+
+func makeBuildNumberFile() {
+	version := readVersion(buildVersion, defaultVersion)
+	buildNumberMap := readBuildNumberMap(buildHistory)
+	buildNumberMap[version]++
+	saveBuildNumberFile(buildNumberMap[version], buildNumber)
+	saveBuildNumberMap(buildNumberMap, buildHistory)
 }
