@@ -38,7 +38,7 @@ func readVersion(filename, defaultVersion string) string {
 	version, err := ioutil.ReadFile(filename)
 	if err != nil {
 		version = []byte(defaultVersion)
-		fmt.Printf("读取%s文件时出错，设置主版本号为“%s”。\n", filename, defaultVersion)
+		fmt.Printf("%s不存在，或者读取%s文件时出错，设置主版本号为“%s”。\n", filename, filename, defaultVersion)
 		ioutil.WriteFile(filename, version, 0777)
 	}
 	return string(version)
@@ -49,7 +49,7 @@ func readBuildNumberMap(filename string) map[string]int {
 
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Printf("读取%s失败，正在将其置零。\n", filename)
+		fmt.Printf("%s不存在，或者读取%s失败，正在将其置零。\n", filename, filename)
 		return buildNumberMap
 	}
 
